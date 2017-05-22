@@ -1,0 +1,253 @@
+@charset 'UTF-8';
+
+.green {
+	color: green !important;
+}
+
+.red {
+	color: red !important;
+}
+
+.orange {
+	color: orange !important;
+}
+
+.grey {
+	color: gray !important;
+}
+
+.blue {
+	color: #00000F !important;
+}
+
+.purple {
+	color: #FF00FF !important;
+}
+
+.bold {
+	font-weight: bold;
+}
+
+.brcImg {
+	cursor: pointer;
+	opacity: 0.7;
+}
+
+.brcImg:hover {
+	opacity: 1;
+}
+
+.inboxImg {
+	border: 1px;
+	cursor: pointer;
+	height: 16px;
+	opacity: .7;
+	padding-left: 3px;
+	padding-right: 3px;
+	width: 16px;
+}
+
+.inboxImg:hover {
+	opacity: 1;
+}
+
+.unread {
+	padding-left: 27px;
+}
+
+.tracker, .NRinfo, .BRCinfo, .NR {
+	background: -moz-linear-gradient(center top, #3F505F, #1B1B1B);
+	background: -webkit-linear-gradient(center top ,#3F505F, #1B1B1B);
+	background: -o-linear-gradient(top, #3F505F, #1B1B1B);
+	background: linear-gradient(to bottom, #3F505F, #1B1B1B);
+	border-radius: 5px;
+	box-shadow: 2px 2px 2px 2px #1B1B1B;
+	color: #FFFFFF;
+	opacity: 0.90;
+}
+
+.tracker {
+	border: 2px double gray;
+	padding: 5px;
+	position: fixed;
+	width: 200px;
+}
+
+.NR {
+	border: 2px double gray;
+	padding: 5px;
+	position: absolute;
+	width: 250px;
+}
+
+.NRinfo {
+	background-color: #3F505F !important;
+	border: 2px double gray;
+	border-radius: 5px;
+	color: #FFA !important;
+	display: block;
+	opacity: .9;
+	padding: 5px;
+	position: absolute;
+	text-decoration: none;
+	width: 300px;
+}
+
+.NRicon {
+	position: absolute;
+	right: 7px;
+	top: 7px
+}
+
+.BRCinfo {
+	border: 2px double gray;
+	cursor: move;
+	left: 16%;
+	padding: 5px 5px 2px 5px;
+	position: fixed;
+	width: 100px;
+}
+
+.BRCinfo > span > a {
+	color: #FFFFFF !important;
+}
+
+.reset {
+	border: 2px solid #BEBEBE;
+}
+
+.reset:hover {
+	border: 2px solid #960011;
+	cursor: pointer;
+}
+
+.reset, .reset:hover {
+	border-radius: 7px;
+	padding: 2px;
+	text-align: center;
+}
+
+.marqueebox {
+	border: 1px solid #FFFFFF;
+	border-radius: 5px;
+	display: none;
+	padding: 3px;
+	position: absolute;
+	text-align: center;
+	top: 20px;
+}
+
+#bthead {
+	cursor: move;
+}
+
+#sthead {
+	cursor: move;
+}
+
+#prefsContainer {
+	margin-left: 10px;
+}
+
+#jailDivleft {
+	float: left;
+	/* hack to make it harder for #jailDivright to wrap into next line */
+	height: 500px;
+	width: 50%;
+}
+
+#jailDivleft > span {
+	display: inline-block;
+	width: 180px;
+}
+
+#jailDivleft > input {
+	text-align: center;
+	width: 60px;
+}
+
+#jailDivright {
+	float: left;
+	width: 50%;
+}
+
+#jailDivright > span {
+	display: inline-block;
+	width: 180px;
+}
+
+#jailDivright > input {
+	text-align: center;
+	width: 60px;
+}
+
+#custom_groups > span {
+	display: inline-block;
+	width: 180px;
+}
+
+#custom_groups > input {
+	text-align: center;
+	width: 60px;
+}
+
+#OBHeaderPrefs {
+	font-weight: bold;
+	margin-bottom: 5px;
+}
+
+.obv {
+	text-align: center;
+}
+
+span label {
+	font-size: 100%;
+}
+
+.menuItem {
+	color: #FFFFFF;
+	display: block;
+	font-size: 11px;
+	margin: 0;
+	padding: 3px 15px;
+	text-decoration: none;
+}
+
+.menuItem:hover {
+	background-color: #960011;
+	color: #DDDD00;
+	cursor: pointer;
+}
+
+.dlContainer {
+	float: right;
+	margin-right: 5px;
+	margin-top: 3px;
+}
+
+.ob-prefs-bg {
+	cursor: pointer;
+	left: 109px;
+	top: 43px;
+}
+
+.ob-lf-bg {
+	cursor: pointer;
+	left: 112px;
+	top: 75px;
+}
+
+.ob-prefs-img {
+	left: 6px;
+	position: absolute;
+	top: 6px;
+}
+
+.notify {
+	display: inline-block;
+	text-align: left;
+}
+
+.notify label {
+	padding-left: 2px;
+}

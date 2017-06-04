@@ -138,6 +138,11 @@ var Util = function () {
         }
     }
 
+    var version = getVersion();
+    var preferences = getObject('prefs') || {};
+    var settings = getObject('sets') || {};
+    var notificationsArray = [];
+
     function getValue(name, standard) {
         return localStorage[name + '_' + version] || standard;
     }
@@ -167,9 +172,50 @@ var Util = function () {
         }
     }
 
-    var version = getVersion();
-    var preferences = getObject('prefs') || {};
-    var settings = getObject('sets') || {};
+    function SendNotification(title, text, tag, callbackUrl, beyondIcon) {
+        var notification = new Notification(title, {
+            dir: 'auto',
+            lang: '',
+            body: text,
+            tag: tag,
+            icon: beyondIcon
+        });
+        notification.onclick = function () {
+            if (callbackUrl !== null) {
+                unsafeWindow.omerta.GUI.container.loadPage(callbackUrl);
+            }
+            window.focus();
+            notification.close();
+        };
+
+        // Automatically close notification
+        var autoCloseSecs = parseInt(Util.settings.get('autoCloseNotificationsSecs') || 0, 10);
+        if (autoCloseSecs > 0) {
+            setTimeout(function () {
+                notification.close();
+                delete notificationsArray[tag];
+            }, autoCloseSecs * 1000);
+        }
+
+        notificationsArray[tag] = notification;
+    }
+
+    var beeping = false;
+    var beep = new Howl({
+        src: ['https://d1oi19aitxwcck.cloudfront.net/sounds/beep.wav'], // doesn't work with GM_getResourceURL
+        onend: function onend() {
+            beeping = false;
+        }
+    });
+
+    function playBeep() {
+        if (beeping) {
+            // don't play beep more than once at the same time
+            return;
+        }
+        beeping = true;
+        beep.play();
+    }
 
     var Util = {
         version: version,
@@ -254,6 +300,17 @@ var Util = function () {
                 var dec = str[1] || '';
                 number = str[0].replace(/(\d)(?=(\d{3})+\b)/g, '$1,');
                 return dec ? number + '.' + dec : number;
+            }
+        },
+        notification: {
+            send: function send(notId, title, text, tag, callbackUrl, icon) {
+                if (preferences['notify_' + notId]) {
+                    SendNotification(title, text, tag, callbackUrl, icon);
+                }
+
+                if (preferences['notify_' + notId + '_sound']) {
+                    playBeep();
+                }
             }
         },
         omerta: {

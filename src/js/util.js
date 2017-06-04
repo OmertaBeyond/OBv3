@@ -30,6 +30,11 @@ const Util = (() => {
         }
     }
 
+    const version = getVersion();
+    const preferences = getObject('prefs') || {};
+    const settings = getObject('sets') || {};
+    const notificationsArray = [];
+
     function getValue(name, standard) {
         return (localStorage[`${name}_${version}`] || standard);
     }
@@ -59,9 +64,50 @@ const Util = (() => {
         }
     }
 
-    const version = getVersion();
-    const preferences = getObject('prefs') || {};
-    const settings = getObject('sets') || {};
+    function SendNotification(title, text, tag, callbackUrl, beyondIcon) {
+        const notification = new Notification(title, {
+            dir: 'auto',
+            lang: '',
+            body: text,
+            tag,
+            icon: beyondIcon
+        });
+        notification.onclick = function () {
+            if (callbackUrl !== null) {
+                unsafeWindow.omerta.GUI.container.loadPage(callbackUrl);
+            }
+            window.focus();
+            notification.close();
+        };
+
+        // Automatically close notification
+        const autoCloseSecs = parseInt(Util.settings.get('autoCloseNotificationsSecs') || 0, 10);
+        if (autoCloseSecs > 0) {
+            setTimeout(() => {
+                notification.close();
+                delete notificationsArray[tag];
+            }, autoCloseSecs * 1000);
+        }
+
+        notificationsArray[tag] = notification;
+    }
+
+    let beeping = false;
+    const beep = new Howl({
+        src: ['https://d1oi19aitxwcck.cloudfront.net/sounds/beep.wav'], // doesn't work with GM_getResourceURL
+        onend: () => {
+            beeping = false;
+        }
+    });
+
+    function playBeep() {
+        if (beeping) {
+            // don't play beep more than once at the same time
+            return;
+        }
+        beeping = true;
+        beep.play();
+    }
 
     const Util = {
         version,
@@ -146,6 +192,17 @@ const Util = (() => {
                 const dec = str[1] || '';
                 number = str[0].replace(/(\d)(?=(\d{3})+\b)/g, '$1,');
                 return (dec) ? `${number}.${dec}` : number;
+            }
+        },
+        notification: {
+            send: (notId, title, text, tag, callbackUrl, icon) => {
+                if (preferences[`notify_${notId}`]) {
+                    SendNotification(title, text, tag, callbackUrl, icon);
+                }
+
+                if (preferences[`notify_${notId}_sound`]) {
+                    playBeep();
+                }
             }
         },
         omerta: {

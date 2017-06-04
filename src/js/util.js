@@ -31,7 +31,7 @@ const Util = (() => {
     }
 
     function getValue(name, standard) {
-         return (localStorage[`${name}_${version}`] || standard);
+        return (localStorage[`${name}_${version}`] || standard);
     }
 
     function setValue(name, value) {
@@ -87,13 +87,50 @@ const Util = (() => {
             get: (name, standard) => {
                 return getValue(name, standard);
             },
+
             set: (name, value) => {
                 return setValue(name, value);
+            },
+
+            getPow: (name, i, def) => {
+                const info = getValue(name, `${def}`);
+                let w;
+                if (name == 'bninfo') {
+                    w = 2; // set width of buckets
+                } else if (name == 'prefs') {
+                    w = 1;
+                }
+                return (1 * info.substr((i * w), w)); // return int version of bucket
+            },
+
+            setPow: (name, i, value) => {
+                let info = getValue(name, '0');
+                let w;
+                if (name == 'bninfo') {
+                    w = 2; // set width of buckets
+                } else if (name == 'prefs') {
+                    w = 1;
+                }
+                i = i * w; // set string index
+                value += ''; // toString
+                while (value.length < w) {
+                    value = `0${value}`; // pad with zeros
+                }
+                if (i > 0 && (i + w) < info.length) {
+                    info = info.substring(0, i) + value + info.substring(i + w); // value goes in middle
+                } else if (i === 0) {
+                    info = value + info.substring(w); // value goes at beginning
+                } else if ((i + w) >= info.length) {
+                    info = info.substring(0, i) + value; // value goes at end
+                } else {
+                    return;
+                }
+                setValue(name, info); // store string
             }
         },
         array: {
             arraySum: (array) => {
-                array.reduce((a, b) => {
+                return array.reduce((a, b) => {
                     return (a + b);
                 });
             }
@@ -102,6 +139,20 @@ const Util = (() => {
             random: (min, max) => {
                 return Math.floor(((max - min) + 1) * Math.random()) + min;
             }
+        },
+        number: {
+            commafy: function commafy(number) {
+                const str = (`${number}`).split('.');
+                const dec = str[1] || '';
+                number = str[0].replace(/(\d)(?=(\d{3})+\b)/g, '$1,');
+                return (dec) ? `${number}.${dec}` : number;
+            }
+        },
+        omerta: {
+            ranks: ['Empty-suit', 'Delivery Boy', 'Delivery Girl', 'Picciotto', 'Shoplifter', 'Pickpocket', 'Thief', 'Associate', 'Mobster', 'Soldier', 'Swindler', 'Assassin', 'Local Chief', 'Chief', 'Bruglione', 'Capodecina', 'Godfather', 'First Lady'],
+            cities: ['Detroit', 'Chicago', 'Palermo', 'New York', 'Las Vegas', 'Philadelphia', 'Baltimore', 'Corleone'],
+            boozenames: ['NO BOOZE', 'Wine', 'Beer', 'Rum', 'Cognac', 'Whiskey', 'Amaretto', 'Port'],
+            narcnames: ['NO NARCS', 'Morphine', 'Marijuana', 'Glue', 'Heroin', 'Opium', 'Cocaine', 'Tabacco']
         },
         string: {
             /**
@@ -160,6 +211,21 @@ const Util = (() => {
                 bounds.bottom = bounds.top + node.outerHeight();
 
                 return (!(viewport.right < bounds.left || viewport.left > bounds.right || viewport.bottom < bounds.top || viewport.top > bounds.bottom));
+            },
+            grab: (url, func) => {
+                let r = 0;
+                if (window.XMLHttpRequest) {
+                    r = new XMLHttpRequest();
+                }
+                r.onreadystatechange = function () {
+                    if (r.readyState == 4) {
+                        if (r.status == 200) {
+                            func(r.responseText);
+                        }
+                    }
+                };
+                r.open('GET', url, true);
+                r.send(null);
             }
         }
     };

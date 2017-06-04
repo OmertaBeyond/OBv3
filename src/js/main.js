@@ -1,6 +1,8 @@
 import Util from './Util';
+import BRC from './modules/brc';
 
 const gamePages = [];
+gamePages.push(BRC);
 // gamePages.push(Vote);
 
 if (document.getElementById('game_container') !== null) {

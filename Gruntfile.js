@@ -70,6 +70,7 @@ module.exports = function (grunt) {
 					'build/user.js',
 					'build/meta.js',
 					'build/util.js',
+					'build/modules/brc.js',
 					'build/main.js'
 				],
 				dest: 'dist/ob.user.js'

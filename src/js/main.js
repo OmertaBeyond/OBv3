@@ -1,5 +1,7 @@
 import Util from './Util';
+import Marquee from './modules/marquee';
 import BRC from './modules/brc';
+
 
 const gamePages = [];
 gamePages.push(BRC);
@@ -53,3 +55,28 @@ if (document.getElementById('game_container') !== null) {
 		characterData: false
 	});
 }
+
+$('#game_container').one('DOMNodeInserted', () => {
+	$('.top-nav').append(
+		$('<li>').addClass('pull-left').css({
+			width: '40%',
+			padding: '0',
+			display: 'table',
+			lineHeight: '14px'
+		}).append(
+			$('<div>').attr('id', 'marquee').css({
+				display: 'table-cell',
+				verticalAlign: 'middle'
+			}),
+			$('<div>').attr('id', 'hiddenbox').addClass('marqueebox')
+			)
+	);
+
+	Marquee.build();
+
+	let city = Util.storage.getPow('bninfo', 2, -1);
+	if (city > 0) {
+		city = Util.omerta.cities[city - 4];
+		$(`#${city}`).css('font-style', 'italic');
+	}
+});

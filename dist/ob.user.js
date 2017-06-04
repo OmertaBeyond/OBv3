@@ -400,6 +400,177 @@ var Util = function () {
 
 
 
+var Marquee = function ($) {
+	var prevPrices = [];
+	var firstTimePrice = true;
+
+	function buildMarquee() {
+		setTimeout(function () {
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: '/BeO/webroot/index.php?module=API&action=smuggling_prices',
+				onload: function onload(resp) {
+					var parser = new DOMParser();
+					var dom = parser.parseFromString(resp.responseText, 'application/xml');
+
+					function getPrice(drug, city) {
+						return dom.getElementsByTagName(drug)[city].textContent;
+					}
+
+					function refreshMarquee(h, m) {
+						h = m >= 31 ? h + 1 : h;
+						m = m >= 31 ? 1 : 31;
+						var marQd = new Date();
+						marQd.setHours(h);
+						marQd.setMinutes(m);
+						marQd.setSeconds(0);
+						marQd.setMilliseconds(0);
+						return marQd.getTime() - unsafeWindow.omerta.Clock.getTime();
+					}
+
+					var p = [];
+					var q = [];
+					var pricesChanged = false;
+
+					for (var _i = 0; _i <= 7; _i++) {
+						p[_i] = getPrice('cocaine', _i);
+						q[_i] = p[_i];
+						if (prevPrices === undefined || prevPrices[_i] === undefined || prevPrices[_i] != p[_i]) {
+							pricesChanged = true;
+						}
+					}
+
+					if (pricesChanged) {
+						prevPrices = JSON.parse(JSON.stringify(q));
+					} else {
+						setTimeout(buildMarquee, 30000);
+						return;
+					}
+
+					var max = p.sort(function (a, b) {
+						return b - a;
+					})[0];
+					var min = p[p.length - 1];
+
+					var highCity = '';
+					var highCityPrice = 0;
+					var lowCity = '';
+					var lowCityPrice = 0;
+					var i = 0;
+					q.forEach(function ($n) {
+						if ($n == min) {
+							q[i] = '<span style="color:#00ff00;">' + $n + '</span>';
+							lowCity = Util.omerta.cities[i];
+							lowCityPrice = $n;
+						}
+						if ($n == max) {
+							q[i] = '<span style="color:#ff5353;">' + $n + '</span>';
+							highCity = Util.omerta.cities[i];
+							highCityPrice = $n;
+						}
+						i++;
+					});
+
+					if (!firstTimePrice) {
+						Util.notification.send('bn', 'B/N prices changed', 'High city: ' + highCity + ' (' + highCityPrice + ')\nLow city: ' + lowCity + ' (' + lowCityPrice + ')', 'Booze', './BeO/webroot/index.php?module=Travel', GM_getResourceURL('red-star'));
+					}
+
+					firstTimePrice = false;
+
+					var time = dom.getElementsByTagName('humantime')[0].textContent;
+					time = time.split(' ')[0];
+					time = time.split(':');
+					time = time[1] < 30 ? time[0] + ':00 OT' : time[0] + ':30 OT';
+
+					function hovermenu(city) {
+						var hoverStyle = {
+							display: 'block',
+							position: 'fixed',
+							left: $('#marquee').offset().left,
+							top: '42px',
+							zIndex: '102',
+							opacity: 0.8,
+							backgroundColor: 'black',
+							color: '#EEE',
+							border: 'none',
+							padding: '5px 15px 5px 15px'
+						};
+
+						$('#hiddenbox').css(hoverStyle).html('Morphine: ' + getPrice('morphine', city) + ' | Heroin: ' + getPrice('heroin', city) + ' | Opium: ' + getPrice('opium', city) + ' | Whiskey: ' + getPrice('whiskey', city) + ' | Amaretto: ' + getPrice('amaretto', city) + ' | Rum: ' + getPrice('rum', city));
+					}
+
+					function flytolink(city, priceStr) {
+						var link = $('<a>').attr({
+							id: Util.omerta.cities[city],
+							href: '#'
+						}).css({
+							color: '#FFF',
+							fontSize: '10px'
+						}).click(function () {
+							unsafeWindow.omerta.GUI.container.loadPage('./BeO/webroot/index.php?module=Travel&action=FetchInfo&CityId=' + (city == 'nul' ? 0 : city));
+						});
+
+						if (city == 5 || city == 6 || city == 7) {
+							link.mouseover(function (event) {
+								hovermenu(city, event.clientX - 560);
+								$(this).css('textDecoration', 'underline');
+							});
+						} else if (city === 0 || city == 1 || city == 2) {
+							link.mouseover(function (event) {
+								hovermenu(city, event.clientX + 25);
+								$(this).css('textDecoration', 'underline');
+							});
+						} else {
+							link.mouseover(function (event) {
+								hovermenu(city, event.clientX - 200);
+								$(this).css('textDecoration', 'underline');
+							});
+						}
+						link.mouseout(function () {
+							$('#hiddenbox').css('display', 'none');
+							$(this).css('textDecoration', 'none');
+						});
+						link.html(priceStr);
+
+						return link;
+					}
+
+					var span = $('<span>').append($('<span>').text(time + ': ').css('font-size', '10px'));
+
+					i = 0;
+					p.forEach(function () {
+						span.css('color', '#FFF');
+						span.append(flytolink(i, Util.omerta.cities[i] + ':' + q[i]), $('<span>').text(' | '));
+						i++;
+					});
+
+					span.append($('<a>').attr({
+						href: 'prices.php'
+					}).text('All Prices').css({
+						color: '#FFF',
+						fontSize: '10px'
+					}).hover(function () {
+						$(this).css('textDecoration', 'underline');
+					}, function () {
+						$(this).css('textDecoration', 'none');
+					}));
+
+					$('#marquee').html(span);
+					setTimeout(buildMarquee, refreshMarquee(new Date().getHours(), new Date().getMinutes()));
+				}
+			});
+		});
+	}
+
+	var Marquee = {
+		build: buildMarquee
+	};
+
+	return Marquee;
+}(jQuery);
+
+
+
 var BRC = function ($, Util) {
     var sorts = ['wine', 'cognac', 'whiskey', 'amaretto', 'beer', 'port', 'rum', 'morphine', 'heroin', 'opium', 'cocaine', 'marihuana', 'tabacco', 'glue'];
     var lboth = void 0;
@@ -1489,3 +1660,23 @@ if (document.getElementById('game_container') !== null) {
 		characterData: false
 	});
 }
+
+$('#game_container').one('DOMNodeInserted', function () {
+	$('.top-nav').append($('<li>').addClass('pull-left').css({
+		width: '40%',
+		padding: '0',
+		display: 'table',
+		lineHeight: '14px'
+	}).append($('<div>').attr('id', 'marquee').css({
+		display: 'table-cell',
+		verticalAlign: 'middle'
+	}), $('<div>').attr('id', 'hiddenbox').addClass('marqueebox')));
+
+	Marquee.build();
+
+	var city = Util.storage.getPow('bninfo', 2, -1);
+	if (city > 0) {
+		city = Util.omerta.cities[city - 4];
+		$('#' + city).css('font-style', 'italic');
+	}
+});

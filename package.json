@@ -1,47 +1,47 @@
 {
-  "name": "omertabeyond",
-  "version": "3.0.0-dev",
-  "author": "OBDev Team (https://github.com/OmertaBeyond/OBv3)",
-  "contributors": [
-    "vBm <vbm@omertabeyond.com>",
-    "Dopedog <dopedog@omertabeyond.com>",
-    "Rix <rix@omertabeyond.com>",
-    "MrWhite <mrwhite@omertabeyond.com>",
-    "MurderInc <murderinc@omertabeyond.com>",
-    "Sebbe <sebbe@omertabeyond.com>",
-    "Brainscrewer <brainscrewer@omertabeyond.com>",
-    "semitom <tom.gankema@gmail.com>"
-  ],
-  "description": "Userscript for barafranca.com",
-  "homepage": "https://news.omertabeyond.net",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/OmertaBeyond/OBv3.git"
-  },
-  "bugs": {
-    "url": "https://github.com/OmertaBeyond/OBv3/issues"
-  },
-  "license": "GPL-3.0",
-  "scripts": {
-    "test": "grunt --verbose"
-  },
-  "readmeFilename": "Readme.md",
-  "devDependencies": {
-    "babel-eslint": "^7.2.3",
-    "babel-plugin-transform-es2015-modules-strip": "^0.1.1",
-    "babel-preset-es2015": "^6.24.1",
-    "grunt": "^1.0.1",
-    "grunt-babel": "^6.0.0",
-    "grunt-contrib-clean": "^1.1.0",
-    "grunt-contrib-concat": "^1.0.1",
-    "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-csslint": "^2.0.0",
-    "grunt-contrib-imagemin": "^1.0.1",
-    "grunt-contrib-uglify": "^3.0.1",
-    "grunt-contrib-watch": "^1.0.0",
-    "grunt-eslint": "^19.0.0",
-    "grunt-lintspaces": "^0.8.1",
-    "load-grunt-tasks": "^3.5.2",
-    "time-grunt": "^1.4.0"
-  }
+    "name": "omertabeyond",
+    "version": "3.0.0-dev",
+    "author": "OBDev Team (https://github.com/OmertaBeyond/OBv3)",
+    "contributors": [
+        "vBm <vbm@omertabeyond.com>",
+        "Dopedog <dopedog@omertabeyond.com>",
+        "Rix <rix@omertabeyond.com>",
+        "MrWhite <mrwhite@omertabeyond.com>",
+        "MurderInc <murderinc@omertabeyond.com>",
+        "Sebbe <sebbe@omertabeyond.com>",
+        "Brainscrewer <brainscrewer@omertabeyond.com>",
+        "semitom <tom.gankema@gmail.com>"
+    ],
+    "description": "Userscript for barafranca.com",
+    "homepage": "https://news.omertabeyond.net",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/OmertaBeyond/OBv3.git"
+    },
+    "bugs": {
+        "url": "https://github.com/OmertaBeyond/OBv3/issues"
+    },
+    "license": "GPL-3.0",
+    "scripts": {
+        "test": "grunt --verbose"
+    },
+    "readmeFilename": "Readme.md",
+    "devDependencies": {
+        "babel-eslint": "^7.2.3",
+        "babel-plugin-transform-es2015-modules-strip": "^0.1.1",
+        "babel-preset-es2015": "^6.24.1",
+        "grunt": "^1.0.1",
+        "grunt-babel": "^6.0.0",
+        "grunt-contrib-clean": "^1.1.0",
+        "grunt-contrib-concat": "^1.0.1",
+        "grunt-contrib-copy": "^1.0.0",
+        "grunt-contrib-csslint": "^2.0.0",
+        "grunt-contrib-imagemin": "^1.0.1",
+        "grunt-contrib-uglify": "^3.0.1",
+        "grunt-contrib-watch": "^1.0.0",
+        "grunt-eslint": "^19.0.0",
+        "grunt-lintspaces": "^0.8.1",
+        "load-grunt-tasks": "^3.5.2",
+        "time-grunt": "^1.4.0"
+    }
 }

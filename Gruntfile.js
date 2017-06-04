@@ -68,7 +68,9 @@ module.exports = function (grunt) {
 			userscript: {
 				src: [
 					'build/user.js',
-					'build/meta.js'
+					'build/meta.js',
+					'build/util.js',
+					'build/main.js'
 				],
 				dest: 'dist/ob.user.js'
 			}

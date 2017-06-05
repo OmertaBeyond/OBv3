@@ -225,7 +225,7 @@ var Util = function () {
             },
 
             set: function set(name, value) {
-                setObject(name, 'prefs', value);
+                setObject('prefs', name, value);
             }
         },
         settings: {
@@ -234,7 +234,7 @@ var Util = function () {
             },
 
             set: function set(name, value) {
-                return setObject(name, 'sets', value);
+                return setObject('sets', name, value);
             }
         },
         storage: {

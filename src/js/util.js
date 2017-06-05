@@ -117,7 +117,7 @@ const Util = (() => {
             },
 
             set: (name, value) => {
-                setObject(name, 'prefs', value);
+                setObject('prefs', name, value);
             }
         },
         settings: {
@@ -126,7 +126,7 @@ const Util = (() => {
             },
 
             set: (name, value) => {
-                return setObject(name, 'sets', value);
+                return setObject('sets', name, value);
             }
         },
         storage: {

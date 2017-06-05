@@ -2,11 +2,11 @@ import Util from './Util';
 import Marquee from './modules/marquee';
 import BRC from './modules/brc';
 import Preferences from './ob/preferences';
-
+import Jail from './pages/jail';
 
 const gamePages = [];
 gamePages.push(BRC);
-// gamePages.push(Vote);
+gamePages.push(Jail);
 
 if (document.getElementById('game_container') !== null) {
 	const observer = new MutationObserver((mutations) => {

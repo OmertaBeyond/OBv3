@@ -1,4 +1,5 @@
 const Util = (() => {
+    const obVersion = '3.0.0-dev';
     function getVersion(hostname) {
         hostname = hostname || window.location.hostname;
         if (/(.*).omerta.land$/.test(hostname)) {
@@ -111,6 +112,9 @@ const Util = (() => {
 
     const Util = {
         version,
+        beyond: {
+            version: obVersion
+        },
         preferences: {
             get: (name) => {
                 return preferences[name];

@@ -72,6 +72,7 @@ module.exports = function (grunt) {
 					'build/util.js',
 					'build/modules/marquee.js',
 					'build/modules/brc.js',
+					'build/ob/preferences.js',
 					'build/main.js'
 				],
 				dest: 'dist/ob.user.js'

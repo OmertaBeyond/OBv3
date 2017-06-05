@@ -1,6 +1,7 @@
 import Util from './Util';
 import Marquee from './modules/marquee';
 import BRC from './modules/brc';
+import Preferences from './ob/preferences';
 
 
 const gamePages = [];
@@ -78,6 +79,30 @@ $('#game_container').one('DOMNodeInserted', () => {
 	if (city > 0) {
 		city = Util.omerta.cities[city - 4];
 		$(`#${city}`).css('font-style', 'italic');
+	}
+
+	const prefs_div = $('<div>').addClass('sm-circle-bg ob-prefs-bg').append(
+		$('<span>').addClass('sm-circle sm-health').append(
+			$('<img>').attr({
+				src: GM_getResourceURL('favicon'),
+				title: 'Omerta Beyond Preferences'
+			}).addClass('ob-prefs-img')
+		).hover(
+			function () {
+				$(this).css('background', '#000FF0');
+			},
+			function () {
+				$(this).css('background', '#FFF');
+			}
+			)
+	).click(() => {
+		$('span.title-main').text('Omerta Beyond Preferences');
+		$('#game_container').empty();
+		$('#game_wrapper_container').css('height', '99%');
+		$('#game_container').append(Preferences.page());
+	});
+	if ($('.ob-prefs-bg').length === 0) {
+		$('div.omerta-widget-avatar-body').append(prefs_div);
 	}
 });
 

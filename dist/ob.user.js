@@ -45,19 +45,19 @@
 // @require                  https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js
 // @require                  https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js
 // @require                  https://cdnjs.cloudflare.com/ajax/libs/howler/2.0.3/howler.min.js
-// @resource    css          https://raw.githubusercontent.com/OmertaBeyond/OBv3/master/dist/css/beyond.css
-// @resource    favicon      https://raw.githubusercontent.com/OmertaBeyond/OBv3/master/dist/images/favicon.png
-// @resource    logo         https://raw.githubusercontent.com/OmertaBeyond/OBv3/master/dist/images/logo.png
-// @resource    logo-old     https://raw.githubusercontent.com/OmertaBeyond/OBv3/master/dist/images/logo-old.png
-// @resource    prev         https://raw.githubusercontent.com/OmertaBeyond/OBv3/master/dist/images/prev.png
-// @resource    next         https://raw.githubusercontent.com/OmertaBeyond/OBv3/master/dist/images/next.png
-// @resource    reply        https://raw.githubusercontent.com/OmertaBeyond/OBv3/master/dist/images/reply.png
-// @resource    delete       https://raw.githubusercontent.com/OmertaBeyond/OBv3/master/dist/images/delete.png
-// @resource    log          https://raw.githubusercontent.com/OmertaBeyond/OBv3/master/dist/images/changelog.png
-// @resource    rip          https://raw.githubusercontent.com/OmertaBeyond/OBv3/master/dist/images/rip.png
-// @resource    red-star     https://raw.githubusercontent.com/OmertaBeyond/OBv3/master/dist/images/red-star.png
-// @resource    NRicon       https://raw.githubusercontent.com/OmertaBeyond/OBv3/master/dist/images/magnifier.png
-// @resource    loadingicon  https://raw.githubusercontent.com/OmertaBeyond/OBv3/master/dist/images/loading.png
+// @resource    css          https://raw.githubusercontent.com/OmertaBeyond/OBv2/master/scripts/beyond.css
+// @resource    favicon      https://raw.githubusercontent.com/OmertaBeyond/OBv2/master/images/favicon.png
+// @resource    logo         https://raw.githubusercontent.com/OmertaBeyond/OBv2/master/images/logo.png
+// @resource    logo-old     https://raw.githubusercontent.com/OmertaBeyond/OBv2/master/images/logo-old.png
+// @resource    prev         https://raw.githubusercontent.com/OmertaBeyond/OBv2/master/images/prev.png
+// @resource    next         https://raw.githubusercontent.com/OmertaBeyond/OBv2/master/images/next.png
+// @resource    reply        https://raw.githubusercontent.com/OmertaBeyond/OBv2/master/images/reply.png
+// @resource    delete       https://raw.githubusercontent.com/OmertaBeyond/OBv2/master/images/delete.png
+// @resource    log          https://raw.githubusercontent.com/OmertaBeyond/OBv2/master/images/changelog.png
+// @resource    rip          https://raw.githubusercontent.com/OmertaBeyond/OBv2/master/images/rip.png
+// @resource    red-star     https://raw.githubusercontent.com/OmertaBeyond/OBv2/master/images/red-star.png
+// @resource    NRicon       https://raw.githubusercontent.com/OmertaBeyond/OBv2/master/images/magnifier.png
+// @resource    loadingicon  https://raw.githubusercontent.com/OmertaBeyond/OBv2/master/images/loading.png
 // @include                  http://*.barafranca.com/*
 // @include                  https://*.barafranca.com/*
 // @include                  http://barafranca.com/*
@@ -1680,3 +1680,5 @@ $('#game_container').one('DOMNodeInserted', function () {
 		$('#' + city).css('font-style', 'italic');
 	}
 });
+
+GM_addStyle(GM_getResourceText('css'));

@@ -872,21 +872,7 @@ const BRC = (($, Util) => {
                 if (!$('#AF').length) {
                     if ((Util.settings.get('af_position') || 'floating') == 'floating') {
                         $('#game_container').append(
-                            $('<div>').addClass('BRCinfo')
-                            .css({
-                                position: 'fixed',
-                                left: '16%',
-                                top: '0',
-                                border: '2px double gray',
-                                padding: '5px 5px 2px 5px',
-                                cursor: 'move',
-                                color: '#FFFFFF',
-                                width: '100px',
-                                'box-shadow': '2px 2px 2px 2px #1B1B1B',
-                                background: 'linear-gradient(to bottom, #3F505F, #1B1B1B)',
-                                opacity: '0.9',
-                                'border-radius': '5px'
-                            }).attr({
+                            $('<div>').addClass('BRCinfo').attr({
                                 id: 'AF'
                             }).css({
                                 top: AFtop,

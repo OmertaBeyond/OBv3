@@ -80,3 +80,5 @@ $('#game_container').one('DOMNodeInserted', () => {
 		$(`#${city}`).css('font-style', 'italic');
 	}
 });
+
+GM_addStyle(GM_getResourceText('css'));

@@ -2223,12 +2223,60 @@ var UserInformation = function ($) {
     return UserInformation;
 }(jQuery);
 
+
+
+var Chat = function ($) {
+    var chatObserver = void 0;
+    var firstMessageTs = void 0;
+
+    function sendHighlight(node) {
+        var isBufferedMessage = firstMessageTs >= $.now() - 500;
+        var sender = $(node).find('.msg-author');
+        var messageText = $(node).find('.msg-content');
+        if (!isBufferedMessage && $(node).hasClass('msg-hilight')) {
+            Util.notification.send('highlight', 'Your name was mentioned in the chat', sender.text() + messageText.text(), 'Chat', null, GM_getResourceURL('red-star'));
+        }
+    }
+
+    var Chat = {
+        init: function init() {
+            chatObserver = new MutationObserver(function (mutations) {
+                mutations.forEach(function (mutation) {
+                    for (var i = 0; i < mutation.addedNodes.length; i++) {
+                        var node = mutation.addedNodes[i];
+                        if (node.nodeType == 1 && !node.hasAttribute('data-beyond-fired') && $(node).hasClass('user-message-text')) {
+                            node.setAttribute('data-beyond-fired', true);
+                            if (typeof firstMessageTs == 'undefined') {
+                                firstMessageTs = $.now();
+                            }
+
+                            sendHighlight(node);
+                        }
+                    }
+                });
+            });
+            if (document.getElementById('omerta_chat') !== null) {
+                chatObserver.observe(document.getElementById('omerta_chat'), {
+                    attributes: false,
+                    childList: true,
+                    subtree: true,
+                    characterData: false
+                });
+            }
+        }
+    };
+
+    return Chat;
+}(jQuery);
+
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var gamePages = [];
 gamePages.push(BRC);
 gamePages.push(Jail);
 gamePages.push(UserInformation);
+
+Chat.init();
 
 if (document.getElementById('game_container') !== null) {
 	var observer = new MutationObserver(function (mutations) {

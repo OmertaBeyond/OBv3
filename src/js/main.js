@@ -3,10 +3,12 @@ import Marquee from './modules/marquee';
 import BRC from './modules/brc';
 import Preferences from './ob/preferences';
 import Jail from './pages/jail';
+import UserInformation from './pages/userinformation';
 
 const gamePages = [];
 gamePages.push(BRC);
 gamePages.push(Jail);
+gamePages.push(UserInformation);
 
 if (document.getElementById('game_container') !== null) {
 	const observer = new MutationObserver((mutations) => {

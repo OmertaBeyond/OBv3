@@ -221,7 +221,10 @@ var Util = function () {
     var Util = {
         version: version,
         beyond: {
-            version: obVersion
+            version: obVersion,
+            page: {
+                api: 'https://api.omertabeyond.net'
+            }
         },
         preferences: {
             get: function get(name) {
@@ -321,7 +324,8 @@ var Util = function () {
             ranks: ['Empty-suit', 'Delivery Boy', 'Delivery Girl', 'Picciotto', 'Shoplifter', 'Pickpocket', 'Thief', 'Associate', 'Mobster', 'Soldier', 'Swindler', 'Assassin', 'Local Chief', 'Chief', 'Bruglione', 'Capodecina', 'Godfather', 'First Lady'],
             cities: ['Detroit', 'Chicago', 'Palermo', 'New York', 'Las Vegas', 'Philadelphia', 'Baltimore', 'Corleone'],
             boozenames: ['NO BOOZE', 'Wine', 'Beer', 'Rum', 'Cognac', 'Whiskey', 'Amaretto', 'Port'],
-            narcnames: ['NO NARCS', 'Morphine', 'Marijuana', 'Glue', 'Heroin', 'Opium', 'Cocaine', 'Tabacco']
+            narcnames: ['NO NARCS', 'Morphine', 'Marijuana', 'Glue', 'Heroin', 'Opium', 'Cocaine', 'Tabacco'],
+            rides: ['none', 'geen', 'Fokker DR-1', 'Havilland DH 82A', 'Fleet 7', 'Douglas DC-3']
         },
         string: {
             /**
@@ -2078,11 +2082,153 @@ var Jail = function (Util) {
     return Jail;
 }(Util);
 
+
+
+var UserInformation = function ($) {
+    // define max b/n judging by rank
+    var maxBooze = [1, 2, 2, 5, 7, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 70, 70];
+    var maxNarcs = [0, 0, 0, 1, 2, 4, 5, 7, 8, 10, 11, 13, 14, 16, 17, 20, 20, 20];
+
+    function onInformationPage() {
+        updateUserInformation();
+
+        if (willIsDead()) {
+            $('div.gangster-info-body li:eq(2) a span').append($('<span>').addClass('red').text(' | Dead!'));
+        }
+
+        var $accountStartElement = $('div.gangster-info-body li:eq(5) a span');
+        var howOldAccountText = howOldAccount();
+        var previousText = $accountStartElement.html();
+        $accountStartElement.html(howOldAccountText).click(function () {
+            var currentText = $accountStartElement.html();
+            $accountStartElement.html(previousText);
+            previousText = currentText;
+        });
+    }
+
+    function willIsDead() {
+        var willName = unsafeWindow.omerta.character.info.testament();
+        if (willName !== '') {
+
+            var willTs = Util.storage.get('willTimestamp', 0);
+            var checkWillTs = $.now() - 1000 * 10 * 60;
+            if (willTs <= checkWillTs) {
+                checkUserAlive(willName, function (isAlive) {
+                    Util.storage.set('willTimestamp', $.now());
+                    if (!isAlive) {
+                        Util.storage.set('deadWillName', willName);
+                        return true;
+                    }
+
+                    return false;
+                });
+            } else {
+                var deadWillName = Util.storage.get('deadWillName');
+                if (deadWillName == willName) {
+                    return true;
+                }
+
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    function howOldAccount() {
+        var startDate = unsafeWindow.omerta.character.info.startdate();
+        var diff = Math.abs(Date.now() - startDate.getTime());
+        var diffDays = Math.ceil(diff / (1000 * 3600 * 24));
+        var startDay = startDate.getDate() >= 10 ? startDate.getDate() : '0' + startDate.getDate();
+        var startMonth = startDate.getMonth() + 1 >= 10 ? startDate.getMonth() + 1 : '0' + (startDate.getMonth() + 1);
+        return startDay + '-' + startMonth + '-' + startDate.getFullYear() + ' (' + (diffDays - 1) + ' days old)';
+    }
+
+    /**
+     * Checks if the user is alive
+     * @param  {[String]}  username
+     * @return {Boolean}
+     */
+    function checkUserAlive(username, callback) {
+        $.getJSON(Util.beyond.page.api + '/domains/' + Util.version + '/versions/latest/users/' + username, function (data) {
+            callback(data['alive']);
+        });
+    }
+
+    function updateUserInformation() {
+        var ride = void 0;
+
+        var nick = unsafeWindow.omerta.character.info.name();
+        var rank = unsafeWindow.omerta.character.progress.rank();
+        var bloodType = unsafeWindow.omerta.character.info.bloodtype();
+        var city = unsafeWindow.omerta.character.game.city();
+        var possessions = unsafeWindow.omerta.modules.UserInformation.data.possessions;
+        if (possessions) {
+            $.each(possessions, function (i) {
+                if (possessions[i].type == 'plane') {
+                    ride = possessions[i].name_owned;
+                }
+            });
+        }
+
+        Util.storage.set('bloodType', bloodType);
+        Util.storage.set('nick', nick);
+
+        var booze = 0;
+        var narc = 0;
+
+        for (var i = 0; i <= 17; i++) {
+            if (Util.omerta.ranks[i] == rank) {
+                booze = maxBooze[i];
+                narc = maxNarcs[i];
+                break;
+            }
+        }
+
+        Util.storage.setPow('bninfo', 0, narc);
+        Util.storage.setPow('bninfo', 1, booze);
+
+        var cityCode = 0;
+
+        // parse city to ID
+        for (var _i = 0; _i < 8; _i++) {
+            if (city == Util.omerta.cities[_i]) {
+                cityCode = _i + 4;
+                break;
+            }
+        }
+
+        Util.storage.setPow('bninfo', 2, cityCode); // save
+
+        var plane = 0;
+        // parse plane to ID
+        for (var _i2 = 0; _i2 <= 5; _i2++) {
+            if (Util.omerta.rides[_i2] == ride) {
+                plane = [0, 0, 1, 2, 3, 4][_i2];
+                break;
+            }
+        }
+
+        Util.storage.setPow('bninfo', 3, plane); // save
+    }
+
+    var UserInformation = {
+        OnNodeChange: function OnNodeChange() {
+            if (Util.url.onPage('module=UserInformation')) {
+                onInformationPage();
+            }
+        }
+    };
+
+    return UserInformation;
+}(jQuery);
+
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var gamePages = [];
 gamePages.push(BRC);
 gamePages.push(Jail);
+gamePages.push(UserInformation);
 
 if (document.getElementById('game_container') !== null) {
 	var observer = new MutationObserver(function (mutations) {

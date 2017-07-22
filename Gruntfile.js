@@ -76,6 +76,7 @@ module.exports = function (grunt) {
 					'build/pages/jail.js',
 					'build/pages/userinformation.js',
 					'build/modules/chat.js',
+					'build/pages/user.js',
 					'build/main.js'
 				],
 				dest: 'dist/ob.user.js'

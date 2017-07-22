@@ -5,11 +5,13 @@ import Preferences from './ob/preferences';
 import Jail from './pages/jail';
 import UserInformation from './pages/userinformation';
 import Chat from './modules/chat';
+import UserPage from './pages/user';
 
 const gamePages = [];
 gamePages.push(BRC);
 gamePages.push(Jail);
 gamePages.push(UserInformation);
+gamePages.push(UserPage);
 
 Chat.init();
 

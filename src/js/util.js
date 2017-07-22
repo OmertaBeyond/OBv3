@@ -115,7 +115,8 @@ const Util = (() => {
         beyond: {
             version: obVersion,
             page: {
-                api: 'https://api.omertabeyond.net'
+                api: 'https://api.omertabeyond.net',
+                apiOld: 'https://gm.omertabeyond.net'
             }
         },
         preferences: {

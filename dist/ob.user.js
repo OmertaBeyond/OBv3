@@ -319,6 +319,12 @@ var Util = function () {
                 if (preferences['notify_' + notId + '_sound']) {
                     playBeep();
                 }
+            },
+            remove: function remove(notId) {
+                if (notificationsArray[notId] !== undefined) {
+                    notificationsArray[notId].close();
+                    delete notificationsArray[notId];
+                }
             }
         },
         omerta: {
@@ -2405,6 +2411,46 @@ var UserPage = function ($) {
     return UserPage;
 }(jQuery);
 
+
+
+var CarPage = function ($) {
+    var CarPage = {
+        OnNodeChange: function OnNodeChange(nodeName, nodeId, nodeClass) {
+            if (Util.url.onPage('module=Cars') && nodeId == 'module_Cars') {
+                Util.notification.remove('gta');
+
+                // Grab value of stolen car (does not include cars stolen by lackeys)
+                var carValText = $('#game_container').text().trim();
+                if (carValText.match(/\$ ([,\d]+)/) !== null) {
+                    var oldValue = parseInt(Util.storage.get('carMoney', 0), 10);
+                    var sum = parseInt(carValText.match(/\$ ([,\d]+)/)[1].replace(',', ''), 10);
+                    Util.storage.set('carMoney', sum + oldValue);
+                    var totalSuccess = parseInt(Util.storage.get('carSuccess', 0), 10);
+                    ++totalSuccess;
+                    Util.storage.set('carSuccess', totalSuccess);
+                }
+            }
+
+            if (Util.url.onPage('module=Cars') && nodeClass == 'otable widetable') {
+                var itemspath = 'table[data-info="items"] > tbody > tr[data-id]';
+                // Loop cars
+                var x = 0;
+                var totalCarval = 0;
+                $(itemspath).each(function () {
+                    // grab value
+                    var carVal = parseInt($(itemspath + ':eq(' + x + ') > td:eq(4)').text().replace(',', '').replace('$', ''), 10);
+                    totalCarval += carVal;
+                    ++x;
+                });
+                // Show total value
+                $('div.oheader:eq(2)').text($(itemspath).length + $('div.oheader:eq(2)').text()).append($('<span>').text('total value: $' + Util.number.commafy(totalCarval)));
+            }
+        }
+    };
+
+    return CarPage;
+}(jQuery);
+
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var gamePages = [];
@@ -2412,6 +2458,7 @@ gamePages.push(BRC);
 gamePages.push(Jail);
 gamePages.push(UserInformation);
 gamePages.push(UserPage);
+gamePages.push(CarPage);
 
 Chat.init();
 

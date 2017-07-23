@@ -211,6 +211,12 @@ const Util = (() => {
                 if (preferences[`notify_${notId}_sound`]) {
                     playBeep();
                 }
+            },
+            remove(notId) {
+                if (notificationsArray[notId] !== undefined) {
+                    notificationsArray[notId].close();
+                    delete notificationsArray[notId];
+                }
             }
         },
         omerta: {

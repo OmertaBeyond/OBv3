@@ -16,6 +16,17 @@ const CarPage = (($) => {
                     ++totalSuccess;
                     Util.storage.set('carSuccess', totalSuccess);
                 }
+
+                let maxValue = 0;
+                let maxIndex = 3;
+                $('#nick-car-choices .head h4').each(function (i) {
+                    if (parseInt($(this).text().replace('%', ''), 10) > maxValue) {
+                        maxValue = parseInt($(this).text().replace('%', ''), 10);
+                        maxIndex = i;
+                    }
+                });
+                $(`#nick-car-choices .popup-place-wrapper:eq(${maxIndex})`).addClass('active');
+                $(`#nick-car-choices button:eq(${maxIndex})`).focus();
             }
 
             if (Util.url.onPage('module=Cars') && nodeClass == 'otable widetable') {

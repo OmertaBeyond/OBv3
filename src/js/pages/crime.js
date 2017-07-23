@@ -16,6 +16,10 @@ const CrimePage = (($) => {
                     ++totalSuccess;
                     Util.storage.set('crimeSuccess', totalSuccess);
                 }
+
+                // focus and highlight last crime option
+                $('#crime-choices .popup-place-wrapper:last').addClass('active');
+                $('#crime-choices button:last').focus();
             }
         }
     };

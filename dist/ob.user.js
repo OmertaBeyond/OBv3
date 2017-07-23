@@ -2429,6 +2429,17 @@ var CarPage = function ($) {
                     ++totalSuccess;
                     Util.storage.set('carSuccess', totalSuccess);
                 }
+
+                var maxValue = 0;
+                var maxIndex = 3;
+                $('#nick-car-choices .head h4').each(function (i) {
+                    if (parseInt($(this).text().replace('%', ''), 10) > maxValue) {
+                        maxValue = parseInt($(this).text().replace('%', ''), 10);
+                        maxIndex = i;
+                    }
+                });
+                $('#nick-car-choices .popup-place-wrapper:eq(' + maxIndex + ')').addClass('active');
+                $('#nick-car-choices button:eq(' + maxIndex + ')').focus();
             }
 
             if (Util.url.onPage('module=Cars') && nodeClass == 'otable widetable') {
@@ -2469,6 +2480,10 @@ var CrimePage = function ($) {
                     ++totalSuccess;
                     Util.storage.set('crimeSuccess', totalSuccess);
                 }
+
+                // focus and highlight last crime option
+                $('#crime-choices .popup-place-wrapper:last').addClass('active');
+                $('#crime-choices button:last').focus();
             }
         }
     };

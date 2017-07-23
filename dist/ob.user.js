@@ -2451,6 +2451,31 @@ var CarPage = function ($) {
     return CarPage;
 }(jQuery);
 
+
+
+var CrimePage = function ($) {
+    var CrimePage = {
+        OnNodeChange: function OnNodeChange(nodeName, nodeId) {
+            if (Util.url.onPage('module=Crimes') && nodeId == 'module_Crimes') {
+                Util.notification.remove('crime');
+
+                // Grab money stolen
+                var moneyStolenText = $('#game_container').text().trim();
+                if (moneyStolenText.match(/\$ ([,\d]+)/) !== null) {
+                    var oldValue = parseInt(Util.storage.get('crimeMoney', 0), 10);
+                    var sum = parseInt(moneyStolenText.match(/\$ ([,\d]+)/)[1].replace(',', ''), 10);
+                    Util.storage.set('crimeMoney', sum + oldValue);
+                    var totalSuccess = parseInt(Util.storage.get('crimeSuccess', 0), 10);
+                    ++totalSuccess;
+                    Util.storage.set('crimeSuccess', totalSuccess);
+                }
+            }
+        }
+    };
+
+    return CrimePage;
+}(jQuery);
+
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var gamePages = [];
@@ -2459,6 +2484,7 @@ gamePages.push(Jail);
 gamePages.push(UserInformation);
 gamePages.push(UserPage);
 gamePages.push(CarPage);
+gamePages.push(CrimePage);
 
 Chat.init();
 

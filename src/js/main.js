@@ -8,6 +8,7 @@ import Chat from './modules/chat';
 import UserPage from './pages/user';
 import CarPage from './pages/car';
 import CrimePage from './pages/crime';
+import Service from './modules/service';
 
 const gamePages = [];
 gamePages.push(BRC);
@@ -84,6 +85,7 @@ $('#game_container').one('DOMNodeInserted', () => {
 			)
 	);
 
+	Service.start();
 	Marquee.build();
 
 	let city = Util.storage.getPow('bninfo', 2, -1);

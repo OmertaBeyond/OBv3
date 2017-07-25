@@ -35,6 +35,7 @@ const Util = (() => {
     const preferences = getObject('prefs') || {};
     const settings = getObject('sets') || {};
     const notificationsArray = [];
+    const scheduledNotifications = [];
 
     function getValue(name, standard) {
         return (localStorage[`${name}_${version}`] || standard);
@@ -64,6 +65,16 @@ const Util = (() => {
             return (localStorage[`${name}_${version}`] = JSON.stringify(settings));
         }
     }
+
+    function trySendingNotification(topic, title, text, tag, callbackUrl, icon) {
+                if (preferences[`notify_${topic}`]) {
+                    SendNotification(title, text, tag, callbackUrl, icon);
+                }
+
+                if (preferences[`notify_${topic}_sound`]) {
+                    playBeep();
+                }
+            }
 
     function SendNotification(title, text, tag, callbackUrl, beyondIcon) {
         const notification = new Notification(title, {
@@ -203,19 +214,24 @@ const Util = (() => {
             }
         },
         notification: {
-            send: (notId, title, text, tag, callbackUrl, icon) => {
-                if (preferences[`notify_${notId}`]) {
-                    SendNotification(title, text, tag, callbackUrl, icon);
-                }
+            schedule(topic, firesAt, title, text, tag, callbackUrl, beyondIcon) {
+                if (!scheduledNotifications.hasOwnProperty(topic)) {
+                    const timeout = parseInt(firesAt, 10) - unsafeWindow.omerta.Clock.getTime() / 1000;
+                    if (timeout > 0) {
+                        scheduledNotifications[topic] = true;
+                        setTimeout(() => {
+                            delete scheduledNotifications[topic];
+                            trySendingNotification(topic, title, text, tag, callbackUrl, beyondIcon);
 
-                if (preferences[`notify_${notId}_sound`]) {
-                    playBeep();
+                        }, timeout * 1000);
+                    }
                 }
             },
-            remove(notId) {
-                if (notificationsArray[notId] !== undefined) {
-                    notificationsArray[notId].close();
-                    delete notificationsArray[notId];
+            send: trySendingNotification,
+            remove(topic) {
+                if (notificationsArray[topic] !== undefined) {
+                    notificationsArray[topic].close();
+                    delete notificationsArray[topic];
                 }
             }
         },

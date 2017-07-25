@@ -143,6 +143,7 @@ var Util = function () {
     var preferences = getObject('prefs') || {};
     var settings = getObject('sets') || {};
     var notificationsArray = [];
+    var scheduledNotifications = [];
 
     function getValue(name, standard) {
         return localStorage[name + '_' + version] || standard;
@@ -170,6 +171,16 @@ var Util = function () {
         if (name === 'sets') {
             settings[pref] = value;
             return localStorage[name + '_' + version] = JSON.stringify(settings);
+        }
+    }
+
+    function trySendingNotification(topic, title, text, tag, callbackUrl, icon) {
+        if (preferences['notify_' + topic]) {
+            SendNotification(title, text, tag, callbackUrl, icon);
+        }
+
+        if (preferences['notify_' + topic + '_sound']) {
+            playBeep();
         }
     }
 
@@ -311,19 +322,24 @@ var Util = function () {
             }
         },
         notification: {
-            send: function send(notId, title, text, tag, callbackUrl, icon) {
-                if (preferences['notify_' + notId]) {
-                    SendNotification(title, text, tag, callbackUrl, icon);
-                }
-
-                if (preferences['notify_' + notId + '_sound']) {
-                    playBeep();
+            schedule: function schedule(topic, firesAt, title, text, tag, callbackUrl, beyondIcon) {
+                if (!scheduledNotifications.hasOwnProperty(topic)) {
+                    var timeout = parseInt(firesAt, 10) - unsafeWindow.omerta.Clock.getTime() / 1000;
+                    if (timeout > 0) {
+                        scheduledNotifications[topic] = true;
+                        setTimeout(function () {
+                            delete scheduledNotifications[topic];
+                            trySendingNotification(topic, title, text, tag, callbackUrl, beyondIcon);
+                        }, timeout * 1000);
+                    }
                 }
             },
-            remove: function remove(notId) {
-                if (notificationsArray[notId] !== undefined) {
-                    notificationsArray[notId].close();
-                    delete notificationsArray[notId];
+
+            send: trySendingNotification,
+            remove: function remove(topic) {
+                if (notificationsArray[topic] !== undefined) {
+                    notificationsArray[topic].close();
+                    delete notificationsArray[topic];
                 }
             }
         },
@@ -2491,6 +2507,125 @@ var CrimePage = function ($) {
     return CrimePage;
 }(jQuery);
 
+
+
+var Service = function () {
+
+    function checkHealth() {
+        var serviceData = unsafeWindow.omerta.services.account.data;
+        var newHealth = parseFloat(serviceData.progressbars.health);
+        var oldHealth = parseFloat(Util.storage.get('serviceHealth', 0));
+        if (oldHealth > 0 && oldHealth > newHealth) {
+            var healthText = 'You lost ' + (oldHealth - newHealth) + ' health!';
+            var healthTitle = 'Health (' + Util.version + ')';
+            Util.notification.send('health', healthTitle, healthText, 'health', './BeO/webroot/index.php?module=Bloodbank', GM_getResourceURL('red-star'));
+        }
+
+        Util.storage.set('serviceHealth', newHealth);
+    }
+
+    function checkForNewMessages() {
+        var serviceData = unsafeWindow.omerta.services.account.data;
+        if (serviceData.messages.inbox.length > 0) {
+            var lastMessage = parseInt(Util.storage.get('lastMessage', 0), 10);
+
+            var totalMessages = 0;
+            $.each(serviceData.messages.inbox, function (i, val) {
+                var id = parseInt(val.id, 10);
+                if (lastMessage === id) {
+                    return false;
+                }
+                totalMessages += 1;
+            });
+
+            if (totalMessages !== 0) {
+                var msgId = parseInt(serviceData.messages.inbox[0].id, 10);
+                var msgTitle = '';
+                var msgText = '';
+                var callbackUrl = './BeO/webroot/index.php?module=Mail&action=showMsg&iMsgId=';
+
+                Util.storage.set('lastMessage', msgId);
+                if (totalMessages === 1) {
+                    msgText = 'Message: ' + serviceData.messages.inbox[0].msg.replace(/<br \/>/g, '');
+                    msgTitle = 'New message from ' + serviceData.messages.inbox[0].frm + ': ' + serviceData.messages.inbox[0].sbj + ' (' + Util.version + ')';
+                    callbackUrl = callbackUrl + msgId;
+                } else {
+                    msgText = 'You have got ' + totalMessages + ' new messages';
+                    msgTitle = 'New messages (' + Util.version + ')';
+                    callbackUrl = './BeO/webroot/index.php?module=Mail&action=inbox';
+                }
+
+                Util.notification.send('messages', msgTitle, msgText, 'Mail', callbackUrl, GM_getResourceURL('red-star'));
+            }
+        }
+    }
+
+    function checkForNewAlerts() {
+        var serviceData = unsafeWindow.omerta.services.account.data;
+        if (serviceData.messages.alert.length > 0) {
+            // msgId -1 is a friend request
+            var lastAlert = parseInt(Util.storage.get('lastAlert', 0), 10);
+            var totalAlerts = 0;
+            $.each(serviceData.messages.alert, function (i, val) {
+                var id = val.id ? parseInt(val.id, 10) : -1;
+                if (lastAlert === id) {
+                    return false;
+                }
+                totalAlerts += 1;
+            });
+
+            if (totalAlerts !== 0) {
+                var msgId = serviceData.messages.alert[0].id ? parseInt(serviceData.messages.alert[0].id, 10) : -1;
+                var alertTitle = '';
+                var alertText = '';
+                var callbackUrl = './BeO/webroot/index.php?module=Mail&action=showMsg&iMsgId=';
+                Util.storage.set('lastAlert', msgId);
+                if (totalAlerts === 1) {
+                    // If it's a friend request, it has no msg or id
+                    if (serviceData.messages.alert[0].sbj !== 'Friend Request(s)') {
+                        alertText = 'Alert: ' + serviceData.messages.alert[0].msg.replace(/<br \/>/g, '');
+                        alertTitle = 'Alert! ' + serviceData.messages.alert[0].sbj + ' (' + Util.version + ')';
+                        callbackUrl = callbackUrl + msgId;
+                    } else {
+                        alertText = 'Alert: You got a new friend request!';
+                        alertTitle = 'Alert! ' + serviceData.messages.alert[0].sbj + ' (' + Util.version + ')';
+                        callbackUrl = serviceData.messages.alert[0].link;
+                    }
+                } else {
+                    alertText = 'You have got ' + totalAlerts + ' new alerts';
+                    alertTitle = 'Alert! (' + Util.version + ')';
+                    callbackUrl = './BeO/webroot/index.php?module=Mail&action=inbox';
+                }
+
+                Util.notification.send('alerts', alertTitle, alertText, 'alert', callbackUrl, GM_getResourceURL('red-star'));
+            }
+        }
+    }
+
+    function ScheduleNotifications() {
+        Util.notification.schedule('gta', $('[data-cooldown="car"] input').attr('data-knob-timeend'), 'Nick a car (' + Util.version + ')', 'You can nick a car', 'Car', '/?module=Cars', GM_getResourceURL('red-star'));
+
+        Util.notification.schedule('crime', $('[data-cooldown="crime"] input').attr('data-knob-timeend'), 'Crime (' + Util.version + ')', 'You can do a crime', 'Crime', '/?module=Crimes', GM_getResourceURL('red-star'));
+
+        Util.notification.schedule('travel', $('[data-cooldown="travel"] input').attr('data-knob-timeend'), 'Travel (' + Util.version + ')', 'You can travel', 'Travel', '/?module=Travel', GM_getResourceURL('red-star'));
+
+        Util.notification.schedule('bullets', $('[data-cooldown="bullets"] input').attr('data-knob-timeend'), 'Bullets (' + Util.version + ')', 'You can buy bullets', 'Bullets', '/bullets2.php', GM_getResourceURL('red-star'));
+    }
+
+    var Service = {
+        start: function start() {
+            setInterval(function () {
+                checkHealth();
+                checkForNewMessages();
+                checkForNewAlerts();
+                ScheduleNotifications();
+            }, 5000);
+        }
+    };
+
+    return Service;
+}();
+
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var gamePages = [];
@@ -2571,6 +2706,7 @@ $('#game_container').one('DOMNodeInserted', function () {
 		verticalAlign: 'middle'
 	}), $('<div>').attr('id', 'hiddenbox').addClass('marqueebox')));
 
+	Service.start();
 	Marquee.build();
 
 	var city = Util.storage.getPow('bninfo', 2, -1);

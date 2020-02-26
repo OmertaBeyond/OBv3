@@ -28,7 +28,7 @@
     "readmeFilename": "Readme.md",
     "devDependencies": {
         "babel-core": "^6.26.0",
-        "babel-eslint": "^10.0.2",
+        "babel-eslint": "^10.1.0",
         "babel-plugin-transform-es2015-modules-strip": "^0.1.1",
         "babel-preset-es2015": "^6.24.1",
         "grunt": "^1.0.1",

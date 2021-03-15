@@ -41,7 +41,7 @@
         "grunt-contrib-uglify": "^4.0.1",
         "grunt-contrib-watch": "^1.0.0",
         "grunt-eslint": "^23.0.0",
-        "grunt-lintspaces": "^0.9.0",
+        "grunt-lintspaces": "^0.10.0",
         "load-grunt-tasks": "^5.1.0",
         "time-grunt": "^2.0.0"
     }
